@@ -57,7 +57,7 @@ public class RoomController {
     @DeleteMapping("/{roomId}")
     public ResponseEntity<Void> delete(@PathVariable Integer roomId) {
         roomService.delete(roomId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "매물 필터 검색",
