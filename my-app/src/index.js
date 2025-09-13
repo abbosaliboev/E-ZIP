@@ -4,8 +4,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import "bootstrap-icons/font/bootstrap-icons.css"; // Bootstrap Icons
 import 'leaflet/dist/leaflet.css'; // Leaflet CSS
 
-// Bootstrap CSS (birinchi!)
+// Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
+// Bootstrap Bundle JS (with Popper)
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import App from './App';
 // Global SCSS (custom theme)

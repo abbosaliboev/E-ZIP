@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './home.scss';
 import { LISTINGS } from '../mock/listings';
+import { getAllListings } from '../utils/listingsStore';
 
 // Korea provinces & major cities (autocomplete)
 const KOREA_LOCS = [
@@ -23,6 +24,7 @@ const depositStepsM = [0, 1, 5, 10, 20, 30, 40, 50, 70, 100]; // in millions
 
 export default function Home() {
   const nav = useNavigate();
+  const listings = getAllListings(); // mock + user
 
   // Autocomplete state
   const [locQ, setLocQ] = useState('');

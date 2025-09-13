@@ -1,0 +1,15 @@
+.chat__box{
+    min-height: 300px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  
+  .chat__msg{
+    max-width: 75%;
+    width: fit-content;
+    padding: 8px 12px;
+    border-radius: 16px;
+    background: #f5f7fb;
+    line-height: 1.4;
+  }
+  .chat__msg.me{ margin-left:auto; background:#eaf2ff; }
+  .contract-req{ background:#fff; border:1px solid #e6ebf7; border-radius:12px; padding:8px 10px; }
