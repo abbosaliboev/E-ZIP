@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './auth.scss';
+import { registerUser } from '../../utils/auth';
 
 export default function Register(){
   const nav = useNavigate();
@@ -14,26 +15,30 @@ export default function Register(){
   const [marketing, setMarketing] = useState(false);
 
   const requiredOk = over14 && tos && privacy;
+
   const onToggleAll = () => {
     const next = !all;
     setAll(next);
-    setOver14(next); setTos(next); setPrivacy(next); setMarketing(next);
+    setOver14(next);
+    setTos(next);
+    setPrivacy(next);
+    setMarketing(next);
   };
+
+  // 각 체크박스 변경 시 '모두 동의' 갱신
   const onAnyChange = (setter) => (v) => {
     setter(v);
-    // all = true faqat hammasi true bo'lsa
-    setAll((v2) => {
-      const vals = [
-        v === true ? true : undefined, // placeholder to satisfy linter
-      ];
-      return (over14 || (setter===setOver14 && v)) &&
-             (tos || (setter===setTos && v)) &&
-             (privacy || (setter===setPrivacy && v)) &&
-             (marketing || (setter===setMarketing && v));
+    setAll(() => {
+      const nextOver14 = setter === setOver14 ? v : over14;
+      const nextTos = setter === setTos ? v : tos;
+      const nextPrivacy = setter === setPrivacy ? v : privacy;
+      const nextMarketing = setter === setMarketing ? v : marketing;
+      return nextOver14 && nextTos && nextPrivacy && nextMarketing;
     });
   };
 
   // STEP 2: account
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
@@ -41,20 +46,38 @@ export default function Register(){
   const [show2, setShow2] = useState(false);
 
   const pwValid = useMemo(()=>{
-    // 8+ chars, letters + numbers OR special
     const long = pw.length >= 8;
     const mix = /[A-Za-z]/.test(pw) && /[\d\W]/.test(pw);
     return long && mix;
   }, [pw]);
 
-  const canSubmit = pwValid && pw === pw2 && /\S+@\S+\.\S+/.test(email);
+  const emailValid = /\S+@\S+\.\S+/.test(email);
+  const nameValid = name.trim().length > 0;
+
+  const canSubmit = nameValid && emailValid && pwValid && pw === pw2;
 
   const submit = (e) => {
     e.preventDefault();
     if (!canSubmit) return;
-    // TODO: API call
-    alert('Account created (demo)');
-    nav('/login');
+  
+    const userPayload = {
+      name: name.trim(),
+      email: email.trim(),
+      password: pw, // demo – prod'da hash!
+      consents: { over14, tos, privacy, marketing },
+      createdAt: new Date().toISOString()
+    };
+  
+    try {
+      registerUser(userPayload); // ⬅️ endi shu orqali ro'yxatdan o'tkazib, sessiya ochamiz
+  
+      // ko'chirma alert / mask xabarlar ixtiyoriy
+      alert('Sign up complete ✅\nYou are now logged in.');
+      nav('/'); // yoki /mypage
+    } catch (err) {
+      console.error(err);
+      alert('Error while saving. Please try again.');
+    }
   };
 
   return (
@@ -73,24 +96,40 @@ export default function Register(){
               </label>
 
               <label className="chk">
-                <input type="checkbox" checked={over14} onChange={e=>onAnyChange(setOver14)(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={over14}
+                  onChange={e=>onAnyChange(setOver14)(e.target.checked)}
+                />
                 <span>[Required] I am at least 14 years old.</span>
               </label>
 
               <label className="chk">
-                <input type="checkbox" checked={tos} onChange={e=>onAnyChange(setTos)(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={tos}
+                  onChange={e=>onAnyChange(setTos)(e.target.checked)}
+                />
                 <span>[Required] Agree to Service Terms.</span>
                 <Link to="/terms" className="arrow">›</Link>
               </label>
 
               <label className="chk">
-                <input type="checkbox" checked={privacy} onChange={e=>onAnyChange(setPrivacy)(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={privacy}
+                  onChange={e=>onAnyChange(setPrivacy)(e.target.checked)}
+                />
                 <span>[Required] Agree to Privacy Policy.</span>
                 <Link to="/privacy" className="arrow">›</Link>
               </label>
 
               <label className="chk">
-                <input type="checkbox" checked={marketing} onChange={e=>onAnyChange(setMarketing)(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={marketing}
+                  onChange={e=>onAnyChange(setMarketing)(e.target.checked)}
+                />
                 <span>[Optional] Receive event & benefit alerts.</span>
                 <Link to="/marketing" className="arrow">›</Link>
               </label>
@@ -115,16 +154,35 @@ export default function Register(){
             <p className="auth__hint">Enter the details below to sign up with email.</p>
 
             <form className="auth__form" onSubmit={submit}>
+              {/* 이름 */}
+              <label className="auth__label">Name</label>
+              <input
+                className={`auth__input ${name && !nameValid ? 'is-invalid' : ''}`}
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={e=>setName(e.target.value)}
+                required
+              />
+              {name && !nameValid && (
+                <div className="invalid-msg">Please enter your name.</div>
+              )}
+
+              {/* 이메일 */}
               <label className="auth__label">Email</label>
               <input
-                className="auth__input"
+                className={`auth__input ${email && !emailValid ? 'is-invalid' : ''}`}
                 type="email"
                 placeholder="Enter your email address"
                 value={email}
                 onChange={e=>setEmail(e.target.value)}
                 required
               />
+              {email && !emailValid && (
+                <div className="invalid-msg">Please enter a valid email.</div>
+              )}
 
+              {/* 비밀번호 */}
               <label className="auth__label">Password</label>
               <div className="auth__field">
                 <input
@@ -143,6 +201,7 @@ export default function Register(){
                 <div className="invalid-msg">Use 8+ characters with letters and numbers/symbols.</div>
               )}
 
+              {/* 비밀번호 확인 */}
               <label className="auth__label">Confirm password</label>
               <div className="auth__field">
                 <input

@@ -200,17 +200,11 @@ export default function PostListing(){
           </div>
 
           {/* Address */}
-          <div className="col-12 col-lg-6">
+          <div className="col-12 col-lg-12">
             <div className="form-floating">
               <input name="address1" className={`form-control ${errors.address1?'is-invalid':''}`} placeholder="Road address" />
               <label>Address</label>
               {errors.address1 && <div className="invalid-feedback">{errors.address1}</div>}
-            </div>
-          </div>
-          <div className="col-12 col-lg-6">
-            <div className="form-floating">
-              <input name="address2" className="form-control" placeholder="Apt / Unit / Room" />
-              <label>Address detail</label>
             </div>
           </div>
 

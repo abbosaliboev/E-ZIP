@@ -1,59 +1,46 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { login } from '../../utils/auth';
 import './auth.scss';
 
-export default function Login() {
-  const [show, setShow] = useState(false);
+export default function Login(){
+  const nav = useNavigate();
+  const [email, setEmail] = useState('');
+  const [pw, setPw] = useState('');
+  const [err, setErr] = useState('');
 
-  const submit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    // TODO: call API
-    alert('Logged in (demo)');
+    setErr('');
+    const res = login(email.trim(), pw);
+    if (!res.ok) {
+      if (res.reason === 'NO_ACCOUNT') setErr('No account found. Please sign up.');
+      else if (res.reason === 'EMAIL') setErr('Email does not match our records.');
+      else if (res.reason === 'PASSWORD') setErr('Incorrect password.');
+      else setErr('Login failed.');
+      return;
+    }
+    nav('/'); // yoki /mypage
   };
 
   return (
     <section className="auth container-narrow">
       <div className="auth__panel card-soft">
-        <h1 className="auth__title">Log in with Email</h1>
+        <h1 className="auth__title">Log in</h1>
         <hr className="auth__hr" />
-        <p className="auth__hint">Please log in to continue using our service.</p>
-
-        <form onSubmit={submit} className="auth__form">
-          {/* Email */}
+        <form className="auth__form" onSubmit={onSubmit}>
           <label className="auth__label">Email</label>
-          <input
-            className="auth__input"
-            type="email"
-            placeholder="Enter your email address"
-            required
-          />
+          <input className="auth__input" type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
 
-          {/* Password */}
           <label className="auth__label">Password</label>
-          <div className="auth__field">
-            <input
-              className="auth__input"
-              type={show ? 'text' : 'password'}
-              placeholder="Enter your password"
-              required
-            />
-            <button
-              type="button"
-              className="auth__eye"
-              onClick={() => setShow(v => !v)}
-              aria-label={show ? 'Hide password' : 'Show password'}
-              title={show ? 'Hide password' : 'Show password'}
-            >
-              {show ? '🙈' : '👁️'}
-            </button>
-          </div>
+          <input className="auth__input" type="password" value={pw} onChange={e=>setPw(e.target.value)} required />
+
+          {err && <div className="invalid-msg">{err}</div>}
 
           <button className="auth__primary" type="submit">Log in</button>
 
           <div className="auth__links">
-            <Link to="/reset">Reset password</Link>
-            <span className="sep">|</span>
-            <Link to="/register">Sign up with email</Link>
+            <span className="muted">No account?</span> <Link to="/register">Sign up</Link>
           </div>
         </form>
       </div>
