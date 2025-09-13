@@ -53,7 +53,7 @@
   .btn--ghost{ background:#fff; border:1px solid var(--line); color: var(--ink-900); }
   .btn--ghost:hover{ border-color: #d8def0; }
   .btn--primary{ background: var(--brand); color:#fff; }
-  .btn--primary:hover{ background: var(--brand-600); }
+  .btn--primary:hover{ background: var(--brand-600); color: #fff; }
   
   /* Mobile toggle (faqat kichik ekranda) */
   .nav__toggle{
@@ -81,7 +81,11 @@
       transform: none; opacity: 1; pointer-events: auto;
     }
     .nav__links{ display: grid; gap: 6px; }
-    .nav__actions{ display: flex; gap: 8px; }
+    .nav__actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem; // ~8px bo‘shliq
+      }
   }
   
   /* Container helper (agar globalda yo‘q bo‘lsa) */

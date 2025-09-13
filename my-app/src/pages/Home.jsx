@@ -1,40 +1,52 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './home.scss';
 import { LISTINGS } from '../mock/listings';
 
-// Location uchun ro'yxat (provinsiyalar + yirik shaharlar)
+// Korea provinces & major cities (autocomplete)
 const KOREA_LOCS = [
-  // Special/Metropolitan Cities
-  'Seoul', 'Busan', 'Incheon', 'Daegu', 'Daejeon', 'Gwangju', 'Ulsan', 'Sejong',
-  // Provinces (do)
-  'Gyeonggi-do · Suwon', 'Gyeonggi-do · Seongnam', 'Gyeonggi-do · Yongin', 'Gyeonggi-do · Goyang', 'Gyeonggi-do · Bucheon',
-  'Gangwon-do · Chuncheon', 'Gangwon-do · Gangneung',
-  'Chungcheongbuk-do · Cheongju', 'Chungcheongnam-do · Cheonan', 'Chungcheongnam-do · Asan',
-  'Jeollabuk-do · Jeonju', 'Jeollanam-do · Yeosu',
-  'Gyeongsangbuk-do · Pohang', 'Gyeongsangbuk-do · Gyeongju',
-  'Gyeongsangnam-do · Changwon', 'Gyeongsangnam-do · Gimhae',
-  'Jeju-do · Jeju City', 'Jeju-do · Seogwipo',
+  'Seoul','Busan','Incheon','Daegu','Daejeon','Gwangju','Ulsan','Sejong',
+  'Gyeonggi-do · Suwon','Gyeonggi-do · Seongnam','Gyeonggi-do · Yongin','Gyeonggi-do · Goyang','Gyeonggi-do · Bucheon',
+  'Gangwon-do · Chuncheon','Gangwon-do · Gangneung',
+  'Chungcheongbuk-do · Cheongju','Chungcheongnam-do · Cheonan','Chungcheongnam-do · Asan',
+  'Jeollabuk-do · Jeonju','Jeollanam-do · Yeosu',
+  'Gyeongsangbuk-do · Pohang','Gyeongsangbuk-do · Gyeongju',
+  'Gyeongsangnam-do · Changwon','Gyeongsangnam-do · Gimhae',
+  'Jeju-do · Jeju City','Jeju-do · Seogwipo',
 ];
 
 // Helpers
 const fmtK = (n) => `₩${Math.round(n/1000)}k`;
 const fmtM = (n) => `₩${Math.round(n/1_000_000)}M`;
-const monthlySteps = Array.from({length: 19}, (_,i)=>200_000 + i*100_000); // 200k..2,000k
-const depositStepsM = [0,1,5,10,20,30,40,50,70,100]; // in millions
+const monthlySteps = Array.from({ length: 19 }, (_, i) => 200_000 + i * 100_000); // 200k..2,000k
+const depositStepsM = [0, 1, 5, 10, 20, 30, 40, 50, 70, 100]; // in millions
 
-export default function Home(){
-  // Location autocomplete state
+export default function Home() {
+  const nav = useNavigate();
+
+  // Autocomplete state
   const [locQ, setLocQ] = useState('');
   const [locOpen, setLocOpen] = useState(false);
 
   const locFiltered = useMemo(() => {
     const q = locQ.trim().toLowerCase();
     if (!q) return KOREA_LOCS;
-    return KOREA_LOCS.filter(x => x.toLowerCase().includes(q));
+    return KOREA_LOCS.filter((x) => x.toLowerCase().includes(q));
   }, [locQ]);
 
-  // blurda darhol yopilmasligi uchun kichik delay
+  // blurda darhol yopilmasin
   const closeLocLater = () => setTimeout(() => setLocOpen(false), 120);
+
+  // Submit -> /search?...
+  const onSearchSubmit = (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const params = new URLSearchParams();
+    for (const [k, v] of fd.entries()) {
+      if (v !== '' && v != null) params.set(k, v);
+    }
+    nav(`/search?${params.toString()}`);
+  };
 
   return (
     <>
@@ -52,124 +64,151 @@ export default function Home(){
               </p>
             </div>
 
-            {/* Search Bar — FULL WIDTH, no right image */}
+            {/* SEARCH BAR (full width) */}
             <div className="col-12">
               <div className="card-soft p-3 search-pill">
-                <div className="row g-2 align-items-end">
-                  {/* Location with autocomplete */}
-                  <div className="col-12 col-xl-4">
-                    <label className="form-label small text-secondary">Location</label>
-                    <div className="locbox position-relative">
-                      <input
-                        className="form-control"
-                        placeholder="University, station or city"
-                        value={locQ}
-                        onChange={(e)=>setLocQ(e.target.value)}
-                        onFocus={()=>setLocOpen(true)}
-                        onBlur={closeLocLater}
-                        autoComplete="off"
-                      />
-                      {locOpen && (
-                        <div className="locbox__dropdown">
-                          {locFiltered.length === 0 ? (
-                            <div className="locbox__empty">No matches</div>
-                          ) : (
-                            locFiltered.map((item) => (
-                              <button
-                                key={item}
-                                type="button"
-                                className="locbox__item"
-                                onMouseDown={(e)=>e.preventDefault()}
-                                onClick={() => { setLocQ(item); setLocOpen(false); }}
-                              >
-                                {item}
-                              </button>
-                            ))
-                          )}
-                        </div>
-                      )}
+                <form onSubmit={onSearchSubmit}>
+                  <div className="row g-2 align-items-end">
+
+                    {/* Location + autocomplete */}
+                    <div className="col-12 col-xl-4">
+                      <label className="form-label small text-secondary">Location</label>
+                      <div className="locbox position-relative">
+                        <input
+                          name="q"
+                          className="form-control"
+                          placeholder="University, station or city"
+                          value={locQ}
+                          onChange={(e) => setLocQ(e.target.value)}
+                          onFocus={() => setLocOpen(true)}
+                          onBlur={closeLocLater}
+                          autoComplete="off"
+                        />
+                        {locOpen && (
+                          <div className="locbox__dropdown">
+                            {locFiltered.length === 0 ? (
+                              <div className="locbox__empty">No matches</div>
+                            ) : (
+                              locFiltered.map((item) => (
+                                <button
+                                  key={item}
+                                  type="button"
+                                  className="locbox__item"
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  onClick={() => {
+                                    setLocQ(item);
+                                    setLocOpen(false);
+                                  }}
+                                >
+                                  {item}
+                                </button>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Monthly payment: MIN */}
-                  <div className="col-6 col-md-3 col-xl-2">
-                    <label className="form-label small text-secondary">Monthly min</label>
-                    <select className="form-select" defaultValue="">
-                      <option value="">Any</option>
-                      {monthlySteps.map(v => (
-                        <option key={v} value={v}>{fmtK(v)}</option>
-                      ))}
-                    </select>
-                  </div>
+                    {/* Monthly min */}
+                    <div className="col-6 col-md-3 col-xl-2">
+                      <label className="form-label small text-secondary">Monthly min</label>
+                      <select name="monthlyMin" className="form-select" defaultValue="">
+                        <option value="">Any</option>
+                        {monthlySteps.map((v) => (
+                          <option key={v} value={v}>{fmtK(v)}</option>
+                        ))}
+                      </select>
+                    </div>
 
-                  {/* Monthly payment: MAX */}
-                  <div className="col-6 col-md-3 col-xl-2">
-                    <label className="form-label small text-secondary">Monthly max</label>
-                    <select className="form-select" defaultValue="">
-                      <option value="">Any</option>
-                      {monthlySteps.map(v => (
-                        <option key={v} value={v}>{fmtK(v)}</option>
-                      ))}
-                    </select>
-                  </div>
+                    {/* Monthly max */}
+                    <div className="col-6 col-md-3 col-xl-2">
+                      <label className="form-label small text-secondary">Monthly max</label>
+                      <select name="monthlyMax" className="form-select" defaultValue="">
+                        <option value="">Any</option>
+                        {monthlySteps.map((v) => (
+                          <option key={v} value={v}>{fmtK(v)}</option>
+                        ))}
+                      </select>
+                    </div>
 
                     {/* Deposit min */}
                     <div className="col-6 col-md-3 col-xl-2">
-                    <label className="form-label small text-secondary">Deposit min</label>
-                    <select className="form-select" defaultValue="">
+                      <label className="form-label small text-secondary">Deposit min</label>
+                      <select name="depositMin" className="form-select" defaultValue="">
                         <option value="">Any</option>
-                        {depositStepsM.map(m => (
-                        <option key={m} value={m*1_000_000}>
-                            {m === 0 ? 'No deposit' : fmtM(m*1_000_000)}
-                        </option>
+                        {depositStepsM.map((m) => (
+                          <option key={m} value={m * 1_000_000}>
+                            {m === 0 ? 'No deposit' : fmtM(m * 1_000_000)}
+                          </option>
                         ))}
-                    </select>
+                      </select>
                     </div>
 
                     {/* Deposit max */}
                     <div className="col-6 col-md-3 col-xl-2">
-                    <label className="form-label small text-secondary">Deposit max</label>
-                    <select className="form-select" defaultValue="">
+                      <label className="form-label small text-secondary">Deposit max</label>
+                      <select name="depositMax" className="form-select" defaultValue="">
                         <option value="">Any</option>
-                        {depositStepsM.map(m => (
-                        <option key={m} value={m*1_000_000}>
-                            {m === 0 ? 'No deposit' : fmtM(m*1_000_000)}
-                        </option>
+                        {depositStepsM.map((m) => (
+                          <option key={m} value={m * 1_000_000}>
+                            {m === 0 ? 'No deposit' : fmtM(m * 1_000_000)}
+                          </option>
                         ))}
-                    </select>
+                      </select>
                     </div>
 
-                  {/* Floor */}
-                  <div className="col-6 col-md-3 col-xl-2">
-                    <label className="form-label small text-secondary">Floor</label>
-                    <select className="form-select">
-                      <option>Any</option>
-                      <option>1F</option>
-                      <option>2F</option>
-                      <option>3F+</option>
-                    </select>
-                  </div>
+                    {/* Floor */}
+                    <div className="col-6 col-md-3 col-xl-2">
+                      <label className="form-label small text-secondary">Floor</label>
+                      <select name="floor" className="form-select">
+                        <option value="">Any</option>
+                        <option>1F</option>
+                        <option>2F</option>
+                        <option>3F+</option>
+                      </select>
+                    </div>
 
-                  {/* Other Options */}
-                  <div className="col-6 col-md-3 col-xl-2">
-                    <label className="form-label small text-secondary">Other options</label>
-                    <select className="form-select">
-                      <option>None</option>
-                      <option>Furnished</option>
-                      <option>Parking</option>
-                      <option>Pet Friendly</option>
-                    </select>
-                  </div>
+                    {/* Other options */}
+                    <div className="col-6 col-md-3 col-xl-2">
+                      <label className="form-label small text-secondary">Other options</label>
+                      <select name="opt" className="form-select">
+                        <option value="">None</option>
+                        <option>Furnished</option>
+                        <option>Parking</option>
+                        <option>Pet Friendly</option>
+                      </select>
+                    </div>
 
-                  {/* Refresh */}
-                  <div className="col-6 col-md-2 col-xl-1 d-flex align-items-end">
-                    <button className="btn btn-outline-secondary w-100" title="Reset filters">⟳</button>
-                  </div>
+                    {/* Refresh */}
+                    <div className="col-6 col-md-2 col-xl-1 d-flex align-items-end">
+                      <button
+                        type="reset"
+                        className="btn btn-outline-secondary w-100 d-flex justify-content-center align-items-center"
+                        title="Reset filters"
+                      >
+                        <i className="bi bi-arrow-clockwise fs-5"></i>
+                      </button>
+                    </div>
 
-                  {/* Search */}
-                  <div className="col-12 col-md-4 col-xl-2 d-flex align-items-end">
-                    <button className="btn btn-brand w-100">Search</button>
+                    {/* Search */}
+                    <div className="col-12 col-md-4 col-xl-2 d-flex align-items-end">
+                      <button type="submit" className="btn btn-brand w-100 d-flex justify-content-center">
+                        Search
+                      </button>
+                    </div>
                   </div>
+                </form>
+
+                {/* Popular shortcuts */}
+                <div className="d-flex gap-2 flex-wrap mt-3 align-items-center">
+                  <span className="text-secondary small">Popular:</span>
+                  {['Hongdae','Gangnam','Jamsil','Haeundae','Seomyeon'].map((c)=>(
+                    <button key={c} type="button" className="btn btn-sm btn-outline-secondary rounded-pill"
+                      onClick={()=>setLocQ(c)}
+                    >
+                      {c}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -178,7 +217,7 @@ export default function Home(){
         </div>
       </section>
 
-      {/* FEATURED (o'zgarmagan) */}
+      {/* FEATURED (placeholder) */}
       <section className="py-5">
         <div className="container-narrow">
           <div className="d-flex align-items-center justify-content-between mb-3">
@@ -187,25 +226,20 @@ export default function Home(){
           </div>
 
           <div className="row g-3">
-            {LISTINGS.map((x)=>(
+            {LISTINGS.map((x) => (
               <div className="col-12 col-sm-6 col-lg-4" key={x.id}>
                 <a href={`/listing/${x.id}`} className="card-soft d-block h-100 p-0 text-reset">
                   <div className="position-relative ratio ratio-4x3">
                     <img src={x.img} alt={x.title} className="rounded-top-4 object-cover" />
-                    {x.deposit===0 && (
-                      <span className="position-absolute top-0 start-0 m-2 badge bg-white text-dark fw-bold rounded-pill">
-                        No deposit
-                      </span>
-                    )}
                   </div>
                   <div className="p-3">
                     <h3 className="h6 m-0">{x.title}</h3>
                     <div className="text-secondary small mt-1">{x.city} • {x.meta}</div>
                     <div className="d-flex align-items-baseline gap-2 mt-2">
-                      <span className="fw-bold">${x.priceMonthly}</span>
+                      <span className="fw-bold">₩{x.priceMonthly.toLocaleString()}</span>
                       <span className="text-secondary small">/mo</span>
                       <span className="text-secondary small ms-2">
-                        {x.deposit===0 ? 'No deposit' : `Deposit $${x.deposit}`}
+                        {x.deposit === 0 ? 'No deposit' : `Deposit ₩${x.deposit.toLocaleString()}`}
                       </span>
                     </div>
                   </div>

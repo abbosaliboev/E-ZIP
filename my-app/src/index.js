@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import "bootstrap-icons/font/bootstrap-icons.css"; // Bootstrap Icons
+import 'leaflet/dist/leaflet.css'; // Leaflet CSS
 
 // Bootstrap CSS (birinchi!)
 import 'bootstrap/dist/css/bootstrap.min.css';

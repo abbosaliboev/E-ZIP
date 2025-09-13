@@ -1,0 +1,27 @@
+.post {
+    border-radius: 18px;
+  }
+  
+  .post__photos {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  
+  .post__upload {
+    width: 96px; height: 96px; border: 1px dashed #cfd8ea;
+    border-radius: 12px; background: #fafcff; cursor: pointer;
+    display: grid; place-items: center;
+  }
+  .post__uploadInner { text-align: center; }
+  .post__camera { font-size: 26px; display: block; margin-bottom: 6px; }
+  
+  .post__thumb {
+    position: relative; width: 96px; height: 96px;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(16,24,40,.08);
+  }
+  .post__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .post__remove {
+    position: absolute; top: 4px; right: 4px;
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 0; background: rgba(0,0,0,.55); color:#fff; line-height: 1;
+    display: grid; place-items: center; cursor: pointer;
+  }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { LogIn, UserPlus, Menu, X } from 'lucide-react';
+import { LogIn, UserPlus, Menu, X, PlusCircle } from 'lucide-react';
 import logo from '../assets/logo_ezip-2.png';
 import './navbar.scss';
 
@@ -12,7 +12,7 @@ export default function Navbar() {
     <header className="nav">
       <div className="nav__inner container-narrow">
         {/* Left: Logo */}
-        <Link to="/" className="nav__brand">
+        <Link to="/" className="nav__brand" onClick={()=>setOpen(false)}>
           <img src={logo} alt="logo" className="nav__logo" />
         </Link>
 
@@ -31,11 +31,19 @@ export default function Navbar() {
             <NavLink to="/" end className="nav__link" onClick={()=>setOpen(false)}>Find Homes</NavLink>
             <NavLink to="/mypage" className="nav__link" onClick={()=>setOpen(false)}>My Page</NavLink>
           </nav>
+
           <div className="nav__actions">
+            <button
+              className="btn btn--primary"
+              onClick={()=>{ setOpen(false); nav('/post'); }}
+              title="Post a Home"
+            >
+              <PlusCircle size={18}/> Post a Home
+            </button>
             <button className="btn btn--ghost" onClick={()=>{ setOpen(false); nav('/login'); }}>
               <LogIn size={18}/> Log in
             </button>
-            <button className="btn btn--primary" onClick={()=>{ setOpen(false); nav('/register'); }}>
+            <button className="btn btn--ghost" onClick={()=>{ setOpen(false); nav('/register'); }}>
               <UserPlus size={18}/> Sign up
             </button>
           </div>

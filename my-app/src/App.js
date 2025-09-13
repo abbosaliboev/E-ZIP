@@ -5,6 +5,8 @@ import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import MyPage from './pages/MyPage/MyPage';
 import Listing from './pages/Listing/Listing';
+import SearchPage from './pages/Search/SearchPage';
+import PostListing from './pages/Post/PostListing';
 
 export default function App(){
   return (
@@ -17,6 +19,8 @@ export default function App(){
         <Route path="register" element={<Register />} />
         <Route path="mypage" element={<MyPage />} />
         <Route path="*" element={<div className="container py-5">404</div>} />
+        <Route path="search" element={<SearchPage />} />
+        <Route path="post" element={<PostListing />} /> 
       </Routes>
     </>
   );
