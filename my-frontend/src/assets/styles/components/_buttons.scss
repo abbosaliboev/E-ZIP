@@ -1,0 +1,18 @@
+.btn-primary {
+    background-color: $brand-brown;
+    border-color: $brand-brown;
+  
+    &:hover {
+      background-color: darken($brand-brown, 8%);
+    }
+  }
+  
+  .btn-outline {
+    border: 1px solid $brand-brown;
+    color: $brand-brown;
+  
+    &:hover {
+      background-color: $brand-brown;
+      color: #fff;
+    }
+  }
