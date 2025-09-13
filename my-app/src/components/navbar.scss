@@ -1,0 +1,91 @@
+/* Oddiy, zamonaviy SCSS navbar — logo chapda, qolgan hammasi o‘ngda */
+:root{
+    --brand: #3a7af7;
+    --brand-600:#2967c9;
+    --ink-900:#0f172a;
+    --ink-500:#64748b;
+    --line:#e8ecf7;
+  }
+  
+  .nav{
+    position: sticky; top: 0; z-index: 100;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+  }
+  
+  .nav__inner{
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* LEFT */
+  .nav__brand{
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: var(--ink-900);
+  }
+  .nav__logo{ height: 34px; width: auto; display: block; }
+  .nav__brandText{ font-weight: 800; letter-spacing: .2px; }
+  
+  /* RIGHT container */
+  .nav__right{
+    display: flex; align-items: center; gap: 16px;
+  }
+  
+  /* Links */
+  .nav__links{
+    display: flex; align-items: center; gap: 14px;
+  }
+  .nav__link{
+    text-decoration: none;
+    color: var(--ink-500);
+    padding: 8px 10px; border-radius: 10px;
+    &:hover, &.active{ color: var(--ink-900); background: #f3f6ff; }
+  }
+  
+  /* Actions */
+  .btn{
+    border: 0; border-radius: 999px; padding: 8px 14px;
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    font-weight: 600;
+  }
+  .btn--ghost{ background:#fff; border:1px solid var(--line); color: var(--ink-900); }
+  .btn--ghost:hover{ border-color: #d8def0; }
+  .btn--primary{ background: var(--brand); color:#fff; }
+  .btn--primary:hover{ background: var(--brand-600); }
+  
+  /* Mobile toggle (faqat kichik ekranda) */
+  .nav__toggle{
+    display: none;
+    background: #fff; border: 1px solid var(--line);
+    height: 36px; width: 36px; border-radius: 8px;
+    align-items: center; justify-content: center;
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px){
+    .nav__toggle{ display: inline-flex; }
+    .nav__right{
+      position: absolute;
+      top: 64px; right: 0; left: 0;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: grid; gap: 12px;
+      padding: 12px 16px;
+      transform: translateY(-12px);
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s ease;
+    }
+    .nav__right.is-open{
+      transform: none; opacity: 1; pointer-events: auto;
+    }
+    .nav__links{ display: grid; gap: 6px; }
+    .nav__actions{ display: flex; gap: 8px; }
+  }
+  
+  /* Container helper (agar globalda yo‘q bo‘lsa) */
+  .container-narrow{
+    width: min(1120px, 92%);
+    margin-inline: auto;
+  }
