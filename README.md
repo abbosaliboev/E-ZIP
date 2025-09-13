@@ -2,7 +2,7 @@
 ```
 src/
   assets/
-    images/          # Uy rasmlari, icon, logo
+    images/          # Home pic, icon, logo
     styles/
       _variables.scss
       _mixins.scss
@@ -15,7 +15,7 @@ src/
     home/
       HeroSearch.jsx     # Search by station/date/tenants
       FiltersSection.jsx # "Most searched filters" blok
-      ListingsGrid.jsx   # Cards ro'yxati
+      ListingsGrid.jsx   # Card list
     listings/
       ListingCard.jsx
       ListingDetailModal.jsx
@@ -43,7 +43,7 @@ src/
     AppRouter.jsx
   services/
     api.js            # fetch wrappers (mock yoki backend API)
-    listings.js       # uy e’lonlari CRUD
+    listings.js       # house cards CRUD
     auth.js           # login/signup
     chat.js           # chat API
   hooks/
