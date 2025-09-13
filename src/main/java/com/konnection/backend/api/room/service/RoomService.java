@@ -1,7 +1,6 @@
 package com.konnection.backend.api.room.service;
 
 import com.konnection.backend.api.aws.s3.S3Service;
-import com.konnection.backend.api.room.service.GeoService;
 import com.konnection.backend.api.room.dto.RoomCreateRequest;
 import com.konnection.backend.api.room.dto.RoomResponse;
 import com.konnection.backend.api.room.dto.RoomUpdateRequest;
@@ -9,9 +8,10 @@ import com.konnection.backend.api.room.entity.Room;
 import com.konnection.backend.api.room.entity.RoomImage;
 import com.konnection.backend.api.room.repository.RoomImageRepository;
 import com.konnection.backend.api.room.repository.RoomRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -169,16 +169,19 @@ public class RoomService {
         roomRepository.delete(room);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public RoomResponse get(Integer roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매물입니다. id=" + roomId));
         return toResponse(room);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<RoomResponse> list() {
-        return roomRepository.findAll().stream().map(this::toResponse).toList();
+        return roomRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private RoomResponse toResponse(Room room) {

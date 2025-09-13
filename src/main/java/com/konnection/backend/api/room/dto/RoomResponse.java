@@ -72,4 +72,57 @@ public class RoomResponse {
         private boolean thumbnail;
         private int sortOrder;
     }
+
+    /** === 엔티티 -> 응답 DTO 변환 === */
+    public static RoomResponse from(Room r) {
+        return RoomResponse.builder()
+                .roomId(r.getRoomId())
+                .address(r.getAddress())
+                .latitude(r.getLatitude())
+                .longitude(r.getLongitude())
+
+                .monthlyRent(r.getMonthlyRent())
+                .deposit(r.getDeposit())
+                .maintenanceFee(r.getMaintenanceFee())
+
+                .roomType(r.getRoomType())
+                .areaM2(r.getAreaM2())        // ✅ 필드명/게터: areaM2 / getAreaM2()
+                .roomCount(r.getRoomCount())
+                .bathroomCount(r.getBathroomCount())
+
+                .direction(r.getDirection())
+                .heatingType(r.getHeatingType())
+                .entranceType(r.getEntranceType())
+
+                .buildingUse(r.getBuildingUse())
+                .approvalDate(r.getApprovalDate())
+                .floor(r.getFloor())
+
+                .parkingAvailable(r.getParkingAvailable())
+                .totalParkingSpots(r.getTotalParkingSpots())
+
+                .availableFrom(r.getAvailableFrom())
+                .description(r.getDescription())
+
+                .options(r.getOptions())
+                .securityFacilities(r.getSecurityFacilities())
+
+                .landlordName(r.getLandlordName())
+                .landlordPhone(r.getLandlordPhone())
+                .landlordBusinessRegNo(r.getLandlordBusinessRegNo())
+
+                .images(r.getImages() == null ? null :
+                        r.getImages().stream()
+                                .map(img -> ImageDTO.builder()
+                                        .id(img.getId())
+                                        .url(img.getUrl())
+                                        .thumbnail(img.isThumbnail())
+                                        .sortOrder(img.getSortOrder())
+                                        .build())
+                                .toList())
+
+                .createdAt(r.getCreatedAt())
+                .updatedAt(r.getUpdatedAt())
+                .build();
+    }
 }
