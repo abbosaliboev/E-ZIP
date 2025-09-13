@@ -93,3 +93,42 @@
     width: min(1120px, 92%);
     margin-inline: auto;
   }
+
+  .dropdown {
+    position: relative;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+    min-width: 160px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 100;
+    padding: 4px 0;
+  }
+  
+  .dropdown-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 6px 12px;
+    font-size: 14px;
+    background: none;
+    border: none;
+    color: #333 !important;
+    cursor: pointer;
+  }
+  
+  .dropdown-item:hover {
+    background: #f5f7fb;
+  }
+  
+  .dropdown-item.active {
+    font-weight: 600;
+    background: #eaf2ff;
+  }
