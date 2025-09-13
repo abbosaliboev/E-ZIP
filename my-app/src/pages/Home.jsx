@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import './home.scss';
-import { LISTINGS } from '../mock/listings';
+import { fetchRooms } from '../services/room';
 import { getAllListings } from '../utils/listingsStore';
 
-// Korea provinces & major cities (autocomplete)
+// Autocomplete ro'yxat va helperlar sizdagi oldingi koddagidek qolsin (uzoq bo‘lgani uchun qisqartirmayman)
 const KOREA_LOCS = [
   'Seoul','Busan','Incheon','Daegu','Daejeon','Gwangju','Ulsan','Sejong',
   'Gyeonggi-do · Suwon','Gyeonggi-do · Seongnam','Gyeonggi-do · Yongin','Gyeonggi-do · Goyang','Gyeonggi-do · Bucheon',
@@ -15,36 +15,43 @@ const KOREA_LOCS = [
   'Gyeongsangnam-do · Changwon','Gyeongsangnam-do · Gimhae',
   'Jeju-do · Jeju City','Jeju-do · Seogwipo',
 ];
-
-// Helpers
 const fmtK = (n) => `₩${Math.round(n/1000)}k`;
 const fmtM = (n) => `₩${Math.round(n/1_000_000)}M`;
-const monthlySteps = Array.from({ length: 19 }, (_, i) => 200_000 + i * 100_000); // 200k..2,000k
-const depositStepsM = [0, 1, 5, 10, 20, 30, 40, 50, 70, 100]; // in millions
+const monthlySteps = Array.from({ length: 19 }, (_, i) => 200_000 + i * 100_000);
+const depositStepsM = [0, 1, 5, 10, 20, 30, 40, 50, 70, 100];
 
 export default function Home() {
   const nav = useNavigate();
-  const listings = getAllListings(); // mock + user
+  const [featured, setFeatured] = useState([]);
 
-  // Autocomplete state
+  useEffect(() => {
+    (async () => {
+      try {
+        const apiLatest = await fetchRooms({ sort: 'latest' });
+        const locals = getAllListings();
+        setFeatured([...locals, ...apiLatest].slice(0, 6));
+      } catch (e) {
+        console.error(e);
+        setFeatured(getAllListings().slice(0, 6));
+      }
+    })();
+  }, []);
+
+  // Autocomplete
   const [locQ, setLocQ] = useState('');
   const [locOpen, setLocOpen] = useState(false);
-
   const locFiltered = useMemo(() => {
     const q = locQ.trim().toLowerCase();
     if (!q) return KOREA_LOCS;
-    return KOREA_LOCS.filter((x) => x.toLowerCase().includes(q));
+    return KOREA_LOCS.filter(x => x.toLowerCase().includes(q));
   }, [locQ]);
-
-  // blurda darhol yopilmasin
   const closeLocLater = () => setTimeout(() => setLocOpen(false), 120);
 
-  // Submit -> /search?...
   const onSearchSubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const params = new URLSearchParams();
-    for (const [k, v] of fd.entries()) {
+    for (const [k,v] of fd.entries()) {
       if (v !== '' && v != null) params.set(k, v);
     }
     nav(`/search?${params.toString()}`);
@@ -66,13 +73,12 @@ export default function Home() {
               </p>
             </div>
 
-            {/* SEARCH BAR (full width) */}
+            {/* SEARCH BAR */}
             <div className="col-12">
               <div className="card-soft p-3 search-pill">
                 <form onSubmit={onSearchSubmit}>
                   <div className="row g-2 align-items-end">
-
-                    {/* Location + autocomplete */}
+                    {/* Location */}
                     <div className="col-12 col-xl-4">
                       <label className="form-label small text-secondary">Location</label>
                       <div className="locbox position-relative">
@@ -81,8 +87,8 @@ export default function Home() {
                           className="form-control"
                           placeholder="University, station or city"
                           value={locQ}
-                          onChange={(e) => setLocQ(e.target.value)}
-                          onFocus={() => setLocOpen(true)}
+                          onChange={(e)=>setLocQ(e.target.value)}
+                          onFocus={()=>setLocOpen(true)}
                           onBlur={closeLocLater}
                           autoComplete="off"
                         />
@@ -96,11 +102,8 @@ export default function Home() {
                                   key={item}
                                   type="button"
                                   className="locbox__item"
-                                  onMouseDown={(e) => e.preventDefault()}
-                                  onClick={() => {
-                                    setLocQ(item);
-                                    setLocOpen(false);
-                                  }}
+                                  onMouseDown={(e)=>e.preventDefault()}
+                                  onClick={() => { setLocQ(item); setLocOpen(false); }}
                                 >
                                   {item}
                                 </button>
@@ -116,9 +119,7 @@ export default function Home() {
                       <label className="form-label small text-secondary">Monthly min</label>
                       <select name="monthlyMin" className="form-select" defaultValue="">
                         <option value="">Any</option>
-                        {monthlySteps.map((v) => (
-                          <option key={v} value={v}>{fmtK(v)}</option>
-                        ))}
+                        {monthlySteps.map(v => <option key={v} value={v}>{fmtK(v)}</option>)}
                       </select>
                     </div>
 
@@ -127,9 +128,7 @@ export default function Home() {
                       <label className="form-label small text-secondary">Monthly max</label>
                       <select name="monthlyMax" className="form-select" defaultValue="">
                         <option value="">Any</option>
-                        {monthlySteps.map((v) => (
-                          <option key={v} value={v}>{fmtK(v)}</option>
-                        ))}
+                        {monthlySteps.map(v => <option key={v} value={v}>{fmtK(v)}</option>)}
                       </select>
                     </div>
 
@@ -138,9 +137,9 @@ export default function Home() {
                       <label className="form-label small text-secondary">Deposit min</label>
                       <select name="depositMin" className="form-select" defaultValue="">
                         <option value="">Any</option>
-                        {depositStepsM.map((m) => (
-                          <option key={m} value={m * 1_000_000}>
-                            {m === 0 ? 'No deposit' : fmtM(m * 1_000_000)}
+                        {depositStepsM.map(m => (
+                          <option key={m} value={m*1_000_000}>
+                            {m===0 ? 'No deposit' : fmtM(m*1_000_000)}
                           </option>
                         ))}
                       </select>
@@ -151,67 +150,20 @@ export default function Home() {
                       <label className="form-label small text-secondary">Deposit max</label>
                       <select name="depositMax" className="form-select" defaultValue="">
                         <option value="">Any</option>
-                        {depositStepsM.map((m) => (
-                          <option key={m} value={m * 1_000_000}>
-                            {m === 0 ? 'No deposit' : fmtM(m * 1_000_000)}
+                        {depositStepsM.map(m => (
+                          <option key={m} value={m*1_000_000}>
+                            {m===0 ? 'No deposit' : fmtM(m*1_000_000)}
                           </option>
                         ))}
                       </select>
                     </div>
 
-                    {/* Floor */}
-                    <div className="col-6 col-md-3 col-xl-2">
-                      <label className="form-label small text-secondary">Floor</label>
-                      <select name="floor" className="form-select">
-                        <option value="">Any</option>
-                        <option>1F</option>
-                        <option>2F</option>
-                        <option>3F+</option>
-                      </select>
-                    </div>
-
-                    {/* Other options */}
-                    <div className="col-6 col-md-3 col-xl-2">
-                      <label className="form-label small text-secondary">Other options</label>
-                      <select name="opt" className="form-select">
-                        <option value="">None</option>
-                        <option>Furnished</option>
-                        <option>Parking</option>
-                        <option>Pet Friendly</option>
-                      </select>
-                    </div>
-
-                    {/* Refresh */}
-                    <div className="col-6 col-md-2 col-xl-1 d-flex align-items-end">
-                      <button
-                        type="reset"
-                        className="btn btn-outline-secondary w-100 d-flex justify-content-center align-items-center"
-                        title="Reset filters"
-                      >
-                        <i className="bi bi-arrow-clockwise fs-5"></i>
-                      </button>
-                    </div>
-
                     {/* Search */}
                     <div className="col-12 col-md-4 col-xl-2 d-flex align-items-end">
-                      <button type="submit" className="btn btn-brand w-100 d-flex justify-content-center">
-                        Search
-                      </button>
+                      <button type="submit" className="btn btn-brand w-100">Search</button>
                     </div>
                   </div>
                 </form>
-
-                {/* Popular shortcuts */}
-                <div className="d-flex gap-2 flex-wrap mt-3 align-items-center">
-                  <span className="text-secondary small">Popular:</span>
-                  {['Hongdae','Gangnam','Jamsil','Haeundae','Seomyeon'].map((c)=>(
-                    <button key={c} type="button" className="btn btn-sm btn-outline-secondary rounded-pill"
-                      onClick={()=>setLocQ(c)}
-                    >
-                      {c}
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
 
@@ -219,18 +171,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FEATURED (placeholder) */}
+      {/* FEATURED */}
       <section className="py-5">
         <div className="container-narrow">
           <div className="d-flex align-items-center justify-content-between mb-3">
             <h2 className="h4 m-0">Featured homes</h2>
-            <button className="btn btn-link fw-bold">View all</button>
           </div>
-
           <div className="row g-3">
-            {LISTINGS.map((x) => (
+            {featured.map((x) => (
               <div className="col-12 col-sm-6 col-lg-4" key={x.id}>
-                <a href={`/listing/${x.id}`} className="card-soft d-block h-100 p-0 text-reset">
+                <Link to={`/listing/${x.id}`} className="card-soft d-block h-100 p-0 text-reset">
                   <div className="position-relative ratio ratio-4x3">
                     <img src={x.img} alt={x.title} className="rounded-top-4 object-cover" />
                   </div>
@@ -238,14 +188,14 @@ export default function Home() {
                     <h3 className="h6 m-0">{x.title}</h3>
                     <div className="text-secondary small mt-1">{x.city} • {x.meta}</div>
                     <div className="d-flex align-items-baseline gap-2 mt-2">
-                      <span className="fw-bold">₩{x.priceMonthly.toLocaleString()}</span>
+                      <span className="fw-bold">₩{Number(x.priceMonthly||0).toLocaleString()}만</span>
                       <span className="text-secondary small">/mo</span>
                       <span className="text-secondary small ms-2">
-                        {x.deposit === 0 ? 'No deposit' : `Deposit ₩${x.deposit.toLocaleString()}`}
+                        {Number(x.deposit||0)===0 ? 'No deposit' : `Deposit ₩${Number(x.deposit).toLocaleString()}만`}
                       </span>
                     </div>
                   </div>
-                </a>
+                </Link>
               </div>
             ))}
           </div>

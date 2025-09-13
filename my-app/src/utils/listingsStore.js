@@ -1,37 +1,55 @@
 // src/utils/listingsStore.js
-import { LISTINGS as BASE } from '../mock/listings';
+const KEY = 'user_listings_v1';
 
-const LS_KEY = 'user_listings_v1';
-
-export function getUserListings() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
-  catch { return []; }
-}
-
-export function saveUserListings(rows) {
-  localStorage.setItem(LS_KEY, JSON.stringify(rows));
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(fr.result);
+    fr.onerror = reject;
+    fr.readAsDataURL(file);
+  });
 }
 
 export function getAllListings() {
-  return [...BASE, ...getUserListings()];
+  try {
+    const raw = localStorage.getItem(KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
 }
 
-export function getListingById(id) {
-  return getAllListings().find(x => String(x.id) === String(id)) || null;
+export function saveAllListings(arr) {
+  localStorage.setItem(KEY, JSON.stringify(arr));
 }
 
-export function addListing(payload) {
-  const row = {
-    ...payload,
-    id: payload.id || `c_${Date.now()}`,
-    // muhim: cardlarda img ishlatiladi; yo‘q bo‘lsa images[0] dan olamiz
-    img: payload.img || (payload.images && payload.images[0]) || 'https://picsum.photos/seed/new/1000/600'
+export async function addUserListingFromForm(id, form, files = []) {
+  const imgs = [];
+  for (const f of files) {
+    if (f) imgs.push(await fileToDataURL(f));
+  }
+  const title = `${(form.roomType || 'ONE_ROOM').replaceAll('_',' ')} • ${Math.round(form.areaM2 || 0)} m² @ ${form.address || '—'}`;
+
+  const item = {
+    id: String(id || `tmp-${Date.now()}`),
+    title,
+    city: form.address || '',
+    address: form.address || '',
+    priceMonthly: Math.round((form.monthlyRentWon || 0) / 10_000), // won -> 만원
+    deposit: Math.round((form.depositWon || 0) / 10_000),
+    maintenanceFee: Number(form.maintenanceFeeWon || 0),
+    meta: `${form.roomCount || 1} rm · ${form.bathroomCount || 1} bath · ${Math.round(form.areaM2||0)} m²`,
+    img: imgs[0] || '',
+    images: imgs,
+    coords: null,
+    raw: null,
+    createdAtLocal: Date.now(),
   };
-  const mine = getUserListings();
-  mine.unshift(row);
-  saveUserListings(mine);
 
-  // boshqalarga signal berish (home/search tinglaydi)
-  window.dispatchEvent(new StorageEvent('storage', { key: LS_KEY, newValue: JSON.stringify(mine) }));
-  return row;
+  const all = getAllListings();
+  const withoutDup = all.filter(x => x.id !== item.id);
+  withoutDup.unshift(item);
+  saveAllListings(withoutDup);
+  return item.id;
 }

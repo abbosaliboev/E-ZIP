@@ -1,0 +1,106 @@
+.reviews__list {
+  display: -ms-grid;
+  display: grid;
+  gap: 12px;
+}
+
+.rev {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eef1f7;
+}
+
+.rev__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f4f6fb;
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+}
+
+.rev__body {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+
+.rev__meta {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  gap: 10px;
+}
+
+.rev__who {
+  color: #6b7280;
+}
+
+.rev__text {
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.rev__actions {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn.btn-xs {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+.stars {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star {
+  color: #cbd5e1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.star.is-on {
+  color: #f59e0b;
+}
+
+.composer textarea {
+  resize: vertical;
+}
+
+.chev {
+  color: #9aa3b2;
+}
+
+@media (max-width: 640px) {
+  .rev__meta {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: flex-start;
+  }
+}
+/*# sourceMappingURL=reviews.css.map */

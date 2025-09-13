@@ -1,61 +1,77 @@
-/* Controls ko‘rinsin (oq yumaloq fon) */
-.carousel-control-prev,
-.carousel-control-next {
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.carousel-control-prev:hover,
-.carousel-control-next:hover {
-  background: rgba(255, 255, 255, 0.95);
-}
-
-/* Iconlarni qora rangda ko‘rsatamiz */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  filter: invert(0);
-  background-size: 60% 60%;
-}
-
-/* Rasm balandligini cheklaymiz va crop qilamiz */
-.listing-detail .carousel-inner {
-  max-height: 400px;
-}
-.listing-detail .carousel-item img {
-  width: 100%;
-  height: 400px;
-  object-fit: cover;
-  display: block;
-  border-radius: 12px;
-}
-
-@media (max-width: 768px) {
-  .listing-detail .carousel-inner { max-height: 240px; }
-  .listing-detail .carousel-item img { height: 240px; }
-}
-
-.mapbox iframe { border-radius: 12px; }
-
-/* ==== CONTRACT MODAL ==== */
-.contract-modal__backdrop{
-    position: fixed; inset: 0;
-    background: rgba(17, 24, 39, .5);
-    z-index: 1040;
+.listing-detail {
+  /* PHOTOS */
+  .ld-photos {
+    background: #f8f9fb;
+    padding-block: 6px; /* rasm va title orasida deyarli joy bo‘lmasin */
   }
-  .contract-modal__panel{
-    position: fixed; inset: 0;
-    margin: auto; max-width: 720px; width: 92%;
-    height: auto; max-height: 88vh; overflow:auto;
-    background: #fff; border-radius: 16px;
-    padding: 16px;
-    z-index: 1050;
-    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+
+  /* Rasm konteyneri: kenglik cheklangan, markazda */
+  .ld-photo-wrap {
+    position: relative;
+    max-width: 100%;   /* istasangiz 960–1140px oralig‘ida sozlang */
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;    /* thumb/nav chiqib ketmasin */
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
   }
+
+  /* Asosiy rasm: full-width LEKIN cheklangan balandlik */
+  .ld-photo-main {
+    width: 100%;
+    height: clamp(220px, 52vh, 340px); /* qisqa, scrollga sabab bo‘lmaydi */
+    display: block;
+    object-fit: cover;
+    background: #e9eef6;
+  }
+
+  .ld-photo-empty {
+    height: clamp(220px, 42vh, 340px);
+    display: grid; place-items: center;
+    color: #6b7280; background: #eef2f7;
+    font-weight: 600;
+  }
+
+  /* Nav tugmalar: oq, dumaloq, ko‘rinadigan */
+  .ld-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 40px;
+    border: none; border-radius: 999px;
+    background: rgba(255,255,255,0.92);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    font-size: 24px; line-height: 1; color: #0f172a;
+    display: grid; place-items: center; cursor: pointer;
+    transition: background .15s ease, transform .15s ease;
+    &:hover { background: #fff; }
+    &:active { transform: translateY(-50%) scale(.98); }
+  }
+  .ld-prev { left: 10px; }
+  .ld-next { right: 10px; }
+
+  /* Thumbs: markazda, aktivda ko‘k border */
+  .ld-thumbs {
+    position: absolute; left: 0; right: 0; bottom: 8px;
+    display: flex; gap: 6px; justify-content: center;
+    padding: 0 8px;
+    pointer-events: none; /* ichidagi buttonlar uchun: */
+    .ld-thumb {
+      pointer-events: auto;
+      width: 56px; height: 40px;
+      padding: 0; border: 2px solid transparent;
+      background: rgba(255,255,255,0.85);
+      border-radius: 8px; overflow: hidden; cursor: pointer;
+      img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      &.is-active { border-color: #2563eb; }
+    }
+  }
+
+  /* Sticky panel/map stillari o‘z holida qoladi */
+  .ld-sticky { position: sticky; top: 84px; }
+  .ld-map { height: calc(100vh - 150px); min-height: 340px; }
+
+  @media (max-width: 768px) {
+    .ld-photo-main { height: 280px; }
+    .ld-photo-empty { height: 280px; }
+    .ld-map { height: 320px; }
+    .ld-prev { left: 6px; } .ld-next { right: 6px; }
+  }
+}

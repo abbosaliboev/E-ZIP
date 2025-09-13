@@ -1,0 +1,46 @@
+@charset "UTF-8";
+.search .list-scroll {
+  max-height: calc(100vh - 160px);
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.search .search-card {
+  border-radius: 12px;
+  -webkit-transition: -webkit-box-shadow .15s ease, -webkit-transform .15s ease;
+  transition: -webkit-box-shadow .15s ease, -webkit-transform .15s ease;
+  transition: box-shadow .15s ease, transform .15s ease;
+  transition: box-shadow .15s ease, transform .15s ease, -webkit-box-shadow .15s ease, -webkit-transform .15s ease;
+}
+
+.search .search-card:hover {
+  -webkit-transform: translateY(-2px);
+          transform: translateY(-2px);
+}
+
+.search .search-card.is-active {
+  -webkit-box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+}
+
+.search .map-wrap {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 84px;
+  /* navbar osti */
+  height: calc(100vh - 100px);
+  /* oyna sog‘ tomonini to‘ldiradi */
+  min-height: 420px;
+  border-radius: 12px;
+}
+
+@media (max-width: 992px) {
+  .search .list-scroll {
+    max-height: none;
+  }
+  .search .map-wrap {
+    position: static;
+    height: 360px;
+  }
+}
+/*# sourceMappingURL=search.css.map */

@@ -1,0 +1,39 @@
+.ld-img {
+  height: 400px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .ld-img {
+    height: 240px;
+  }
+}
+
+.carousel-control-prev, .carousel-control-next {
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.carousel-control-prev-icon, .carousel-control-next-icon {
+  -webkit-filter: invert(0);
+          filter: invert(0);
+  background-size: 60% 60%;
+}
+/*# sourceMappingURL=listingDetail.css.map */
