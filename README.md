@@ -1,5 +1,5 @@
 # Front Folder Structer 
-
+```
 src/
   assets/
     images/          # Uy rasmlari, icon, logo
@@ -55,3 +55,4 @@ src/
     listingsSlice.js
   App.jsx
   main.jsx
+  ```
