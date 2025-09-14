@@ -1,0 +1,10 @@
+/* src/pages/Chat/components/contractModal.scss */
+.cmodal {
+    position: fixed; inset: 0; z-index: 1060; display: grid; place-items: center;
+    .cmodal__backdrop { position: absolute; inset: 0; background: rgba(7,10,20,.45); backdrop-filter: blur(1px); }
+    .cmodal__panel {
+      position: relative; z-index: 1; width: min(760px, 92vw);
+      background: #fff; border-radius: 16px; padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    }
+  }

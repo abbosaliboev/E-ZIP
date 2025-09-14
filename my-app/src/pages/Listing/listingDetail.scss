@@ -1,37 +1,36 @@
+/* src/pages/Listing/listingDetail.scss */
 .listing-detail {
-  /* PHOTOS */
+  /* === PHOTOS === */
   .ld-photos {
     background: #f8f9fb;
-    padding-block: 6px; /* rasm va title orasida deyarli joy bo‘lmasin */
+    padding-block: 6px;
   }
 
-  /* Rasm konteyneri: kenglik cheklangan, markazda */
   .ld-photo-wrap {
     position: relative;
-    max-width: 100%;   /* istasangiz 960–1140px oralig‘ida sozlang */
+    max-width: 100%;
     margin: 0 auto;
     border-radius: 12px;
-    overflow: hidden;    /* thumb/nav chiqib ketmasin */
+    overflow: hidden;
     box-shadow: 0 1px 0 rgba(0,0,0,0.03);
   }
 
-  /* Asosiy rasm: full-width LEKIN cheklangan balandlik */
+  /* Har doim standart balandlik */
   .ld-photo-main {
     width: 100%;
-    height: clamp(220px, 52vh, 340px); /* qisqa, scrollga sabab bo‘lmaydi */
+    height: 360px;       /* desktop */
+    object-fit: cover;   /* crop qilib to‘ldiradi */
     display: block;
-    object-fit: cover;
     background: #e9eef6;
   }
-
   .ld-photo-empty {
-    height: clamp(220px, 42vh, 340px);
+    height: 360px;
     display: grid; place-items: center;
     color: #6b7280; background: #eef2f7;
     font-weight: 600;
   }
 
-  /* Nav tugmalar: oq, dumaloq, ko‘rinadigan */
+  /* Carousel controls */
   .ld-nav {
     position: absolute; top: 50%; transform: translateY(-50%);
     width: 40px; height: 40px;
@@ -47,12 +46,11 @@
   .ld-prev { left: 10px; }
   .ld-next { right: 10px; }
 
-  /* Thumbs: markazda, aktivda ko‘k border */
   .ld-thumbs {
     position: absolute; left: 0; right: 0; bottom: 8px;
     display: flex; gap: 6px; justify-content: center;
     padding: 0 8px;
-    pointer-events: none; /* ichidagi buttonlar uchun: */
+    pointer-events: none;
     .ld-thumb {
       pointer-events: auto;
       width: 56px; height: 40px;
@@ -64,14 +62,129 @@
     }
   }
 
-  /* Sticky panel/map stillari o‘z holida qoladi */
+  /* === INFO (title / address / price / meta / actions) === */
+  .ld-body { padding: 8px 0 24px; }
+
+  .ld-info {
+    padding: 12px 4px 0;
+    border-bottom: 1px solid #f1f3f5;
+    margin-bottom: 12px;
+
+    .ld-title {
+      margin: 2px 0 4px;
+      font-size: clamp(20px, 2.4vw, 24px);
+      font-weight: 700;
+      line-height: 1.25;
+      color: #0f172a;
+    }
+
+    .ld-address {
+      font-size: .95rem;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .ld-meta-inline {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 8px;
+      .pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        color: #334155;
+        font-size: .88rem;
+        font-weight: 600;
+      }
+    }
+
+    .ld-price {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+      margin-top: 6px;
+      .ld-price-main { font-size: clamp(18px, 2.2vw, 22px); font-weight: 800; color:#2563eb; }
+      .ld-price-sub  { font-size: .9rem; color:#6b7280; }
+      .ld-price-dep  { font-size: .9rem; color:#6b7280; }
+      .badge-soft    { margin-left: 6px; }
+    }
+  }
+
+  .badge-soft {
+    background: #f1f5ff;
+    color:#1d4ed8;
+    border: 1px solid #dbe7ff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: .78rem;
+  }
+
+  .ld-actions {
+    margin-top: 12px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    .btn { border-radius: 10px; padding: 10px 14px; }
+  }
+
+  /* === SECTIONS (description / facilities / owner / map) === */
+  .ld-section {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid #eef2f7;
+    border-radius: 12px;
+
+    .ld-section__title {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .ld-desc {
+      color: #334155; line-height: 1.55; font-size: .96rem;
+      white-space: pre-wrap;
+    }
+
+    ul.ld-list {
+      list-style: none; margin: 0; padding: 0;
+      display: grid; gap: 6px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      li {
+        display: flex; gap: 8px; align-items: center;
+        font-size: .95rem; color:#334155;
+        &:before {
+          content: "•"; color:#2563eb; font-weight: 700;
+          display: inline-block; width: 10px;
+        }
+      }
+    }
+
+    .ld-owner {
+      display: flex; gap: 12px; align-items: center;
+      .avatar {
+        width: 44px; height: 44px; border-radius: 50%;
+        background: #e5edff; color:#1e293b; display:grid; place-items:center;
+        font-weight: 700;
+      }
+      .meta { color:#64748b; font-size:.9rem; }
+      .name { font-weight: 700; }
+    }
+  }
+
+  /* === MAP === */
+  .ld-map { margin-top: 12px; }
+  .ld-map .ratio { border-radius: 12px; overflow: hidden; }
+  .ld-map__empty {
+    height: 100%;
+    min-height: 280px;
+    display: flex; align-items: center; justify-content: center;
+    color: #6b7280;
+  }
+
+  /* === UTIL === */
   .ld-sticky { position: sticky; top: 84px; }
-  .ld-map { height: calc(100vh - 150px); min-height: 340px; }
 
   @media (max-width: 768px) {
-    .ld-photo-main { height: 280px; }
-    .ld-photo-empty { height: 280px; }
-    .ld-map { height: 320px; }
+    .ld-photo-main, .ld-photo-empty { height: 240px; }
     .ld-prev { left: 6px; } .ld-next { right: 6px; }
   }
 }

@@ -1,15 +1,58 @@
-.chat__box{
-    min-height: 300px;
-    display: flex; flex-direction: column; gap: 8px;
+/* src/pages/Chat/chat.scss */
+
+.chat {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 8px;
+  min-height: calc(100vh - 100px);
+
+  .chat__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
   }
-  
-  .chat__msg{
-    max-width: 75%;
-    width: fit-content;
-    padding: 8px 12px;
-    border-radius: 16px;
-    background: #f5f7fb;
-    line-height: 1.4;
+
+  .chat__list {
+    overflow: auto;
+    padding: 8px 0;
+    background: #fafbff;
+    border-radius: 12px;
   }
-  .chat__msg.me{ margin-left:auto; background:#eaf2ff; }
-  .contract-req{ background:#fff; border:1px solid #e6ebf7; border-radius:12px; padding:8px 10px; }
+
+  .chat__row {
+    display: flex;
+    padding: 6px 10px;
+  }
+  .chat__row.is-user { justify-content: flex-end; }
+  .chat__row.is-ai    { justify-content: flex-start; }
+
+  .chat__bubble {
+    display: inline-block;
+    max-width: min(80%, 520px);
+    padding: 10px 12px;
+    border-radius: 12px;
+    line-height: 1.35;
+    font-size: 0.95rem;
+    background: #eef2ff;
+    color: #0f172a;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+    /* matn uzun bo‘lsa ham “pastga cho‘zilib ketmasin” */
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .is-user .chat__bubble {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  .chat__composer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+    textarea {
+      resize: none;
+    }
+  }
+}
